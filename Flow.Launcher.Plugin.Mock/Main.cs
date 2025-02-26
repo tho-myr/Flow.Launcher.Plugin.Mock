@@ -6,11 +6,23 @@ using System.Windows.Media.Imaging;
 using SkiaSharp;
 
 namespace Flow.Launcher.Plugin.Mock {
-    public class Main : IPlugin {
+    public class Main : IPlugin, IContextMenu {
         private PluginInitContext _context;
+
+        private string _iconPath = "Images\\icon.png";
+        private string _copyTextIconPath = "Images\\copy-text-icon.png";
+        private string _outputDir = "Images\\Output";
+        
+        private string _spongebobMemeImagePath = "Images\\mocking-spongebob-meme.png";
+        private string _spongebobMemeImageOutputPath = "mocking-spongebob-meme-output.png";
 
         public void Init(PluginInitContext context) {
             _context = context;
+            _iconPath = Path.Combine(context.CurrentPluginMetadata.PluginDirectory, _iconPath);
+            _copyTextIconPath = Path.Combine(context.CurrentPluginMetadata.PluginDirectory, _copyTextIconPath);
+            _spongebobMemeImagePath = Path.Combine(context.CurrentPluginMetadata.PluginDirectory, _spongebobMemeImagePath);
+            _outputDir = Path.Combine(context.CurrentPluginMetadata.PluginDirectory, _outputDir);
+            _spongebobMemeImageOutputPath = Path.Combine(context.CurrentPluginMetadata.PluginDirectory, _outputDir, _spongebobMemeImageOutputPath);
         }
 
         public List<Result> Query(Query query) {
@@ -20,16 +32,21 @@ namespace Flow.Launcher.Plugin.Mock {
             if (string.IsNullOrEmpty(mockedQuery)) {
                 results.Add(new Result {
                     Title = "please enter a query to mock",
-                    SubTitle = "No qUeRy eNtErEd (\u2b2dω\u2b2d)",
-                    IcoPath = "Images/icon.png"
+                    SubTitle = "PlEaSe eNtEr a qUeRy tO MoCk (\u2b2dω\u2b2d)",
+                    IcoPath = _iconPath
                 });
             } else {
                 results.Add(new Result {
                     Title = "copy mocked text",
                     SubTitle = mockedQuery,
-                    IcoPath = "Images/copy-text-icon.png",
+                    IcoPath = _copyTextIconPath,
                     Action = _ => {
                         Clipboard.SetText(MockingCase(mockedQuery));
+                        _context.API.ShowMsg(
+                            "copied mocked text to clipboard",
+                            mockedQuery,
+                            _iconPath
+                        );
                         return true;
                     }
                 });
@@ -37,19 +54,15 @@ namespace Flow.Launcher.Plugin.Mock {
                 results.Add(new Result {
                     Title = "copy mocking spongebob meme image",
                     SubTitle = mockedQuery,
-                    IcoPath = "Images/icon.png",
+                    IcoPath = _iconPath,
                     Action = _ => {
-                        string iconPath = Path.Combine(_context.CurrentPluginMetadata.PluginDirectory,
-                            "Images/icon.png");
-                        string imagePath = Path.Combine(_context.CurrentPluginMetadata.PluginDirectory,
-                            "Images/mocking-spongebob-meme.png");
-                        BitmapImage image = CreateMockedImage(imagePath, mockedQuery);
+                        BitmapImage image = CreateMockedImage(_spongebobMemeImagePath, mockedQuery);
                         Clipboard.SetImage(image);
-                        SaveImageToOutputDir(image);
+                        SaveImageToOutputDir(image, _spongebobMemeImageOutputPath);
                         _context.API.ShowMsg(
-                            "copied mocking spongebob meme to clipboard", 
-                            mockedQuery, 
-                            iconPath
+                            "copied mocking spongebob meme to clipboard",
+                            mockedQuery,
+                            _iconPath
                         );
                         return true;
                     }
@@ -59,17 +72,25 @@ namespace Flow.Launcher.Plugin.Mock {
             return results;
         }
 
-        private void SaveImageToOutputDir(BitmapImage image) {
-            string outputPath = Path.Combine(_context.CurrentPluginMetadata.PluginDirectory,
-                "Images/Output/mocking-spongebob-meme-output.png");
+        public List<Result> LoadContextMenus(Result selectedResult) {
+            return new List<Result> {
+                new Result {
+                    Title = "open output directory 📂",
+                    SubTitle = "containing last image generated",
+                    IcoPath = _iconPath,
+                    Action = _ => {
+                        _context.API.OpenDirectory(_outputDir);
+                        return true;
+                    }
+                }
+            };
+        }
 
-            // ensure the Output directory exists
-            string outputDir = Path.GetDirectoryName(outputPath);
-            if (!Directory.Exists(outputDir)) {
-                Directory.CreateDirectory(outputDir);
+        private void SaveImageToOutputDir(BitmapImage image, string outputPath) {
+            if (!Directory.Exists(_outputDir)) {
+                Directory.CreateDirectory(_outputDir);
             }
 
-            // save image to disk
             using (var fileStream = new FileStream(outputPath, FileMode.Create)) {
                 var encoder = new PngBitmapEncoder();
                 encoder.Frames.Add(BitmapFrame.Create(image));
@@ -87,7 +108,6 @@ namespace Flow.Launcher.Plugin.Mock {
         }
 
         private BitmapImage CreateMockedImage(string inputImagePath, string text) {
-            // _context.API.ShowMsg("Creating image with text \"" + text + "\"");
             using (var input = File.OpenRead(inputImagePath))
             using (var image = SKBitmap.Decode(input))
             using (var canvas = new SKCanvas(image)) {
@@ -100,7 +120,7 @@ namespace Flow.Launcher.Plugin.Mock {
                     Color = SKColors.White,
                     IsAntialias = true
                 };
-                
+
                 var paintOutline = new SKPaint {
                     Color = SKColors.Black,
                     IsAntialias = true,
@@ -121,7 +141,6 @@ namespace Flow.Launcher.Plugin.Mock {
                     bitmapImage.StreamSource = output;
                     bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                     bitmapImage.EndInit();
-                    // _context.API.ShowMsg("Image copied to clipboard with text \"" + text + "\"");
                     return bitmapImage;
                 }
             }

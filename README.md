@@ -9,9 +9,6 @@
         <a href="https://github.com/tho-myr/Flow.Launcher.Plugin.Mock/pulls">
             <img src="https://img.shields.io/github/issues-pr/tho-myr/Flow.Launcher.Plugin.Mock" alt="GitHub pull requests">
         </a>
-        <a href="https://github.com/tho-myr/Flow.Launcher.Plugin.Mock/actions/workflows/release.yml">
-            <img src="https://img.shields.io/github/actions/workflow/status/tho-myr/Flow.Launcher.Plugin.Mock/release.yml?branch=master" alt="GitHub workflow status">
-        </a>
         <a href="https://github.com/tho-myr/Flow.Launcher.Plugin.Mock/commits">
             <img src="https://img.shields.io/github/last-commit/tho-myr/Flow.Launcher.Plugin.Mock" alt="GitHub last commit">
         </a>

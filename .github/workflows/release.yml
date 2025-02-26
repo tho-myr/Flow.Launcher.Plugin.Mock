@@ -1,0 +1,57 @@
+name: Publish Release
+
+permissions:
+  contents: write
+
+on:
+  push:
+    tags:
+      - '*' 
+    paths:
+      - "Flow.Launcher.Plugin.Mock/plugin.json"
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 7.0.x
+
+      - name: get version
+        id: version
+        uses: notiz-dev/github-action-json-property@release
+        with:
+          path: "Flow.Launcher.Plugin.Mock/plugin.json"
+          prop_path: "Version"
+
+      - run: echo ${{steps.version.outputs.prop}}
+
+      - name: Extract release notes
+        id: extract-release-notes
+        uses: ffurrer2/extract-release-notes@v2
+
+      - run: echo '${{ steps.extract-release-notes.outputs.release_notes }}'
+
+      - name: Restore dependencies
+        run: |
+          cd Flow.Launcher.Plugin.Mock
+          dotnet restore
+
+      - name: Build
+        run: |
+          cd Flow.Launcher.Plugin.Mock
+          dotnet publish -c Release -r win-x64 --no-self-contained Flow.Launcher.Plugin.Mock.csproj
+          7z a -tzip "Flow.Launcher.Plugin.Mock.zip" "./bin/Release/win-x64/publish/*"
+
+      - name: Publish
+        uses: softprops/action-gh-release@v2
+        with:
+          body: '${{ steps.extract-release-notes.outputs.release_notes }}'
+          files: "Flow.Launcher.Plugin.Mock/Flow.Launcher.Plugin.Mock.zip"
+          tag_name: "v${{steps.version.outputs.prop}}"

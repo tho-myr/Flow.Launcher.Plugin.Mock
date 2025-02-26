@@ -1,0 +1,2 @@
+dotnet publish Flow.Launcher.Plugin.Mock -c Release -r win-x64 --no-self-contained
+Compress-Archive -LiteralPath Flow.Launcher.Plugin.Mock/bin/Release/win-x64/publish -DestinationPath Flow.Launcher.Plugin.Mock/bin/Http_Status_Codes.zip -Force

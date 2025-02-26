@@ -1,0 +1,12 @@
+{
+    "ID": "251B44B4162E470B9167A2954DAEBC6E",
+    "ActionKeyword": "mock",
+    "Name": "Mock",
+    "Description": "Generate mocking case and memes (⬭ω⬭)",
+    "Author": "tho-myr",
+    "Version": "1.0.0",
+    "Language": "csharp",
+    "Website": "https://github.com/tho-myr/Flow.Launcher.Plugin.Mock",
+    "IcoPath": "Images\\icon.png",
+    "ExecuteFileName": "Flow.Launcher.Plugin.Mock.dll"
+}

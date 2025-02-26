@@ -51,6 +51,14 @@ pm install Mock by tho-myr
 mock <query_to_mock>
 ```
 
+#### Query example
+
+![query-example.png](readme-assets/query-example.png)
+
+#### Output example
+
+![output-example.png](readme-assets/output-example.png)
+
 ### Development
 
 #### Prerequisites

@@ -31,7 +31,7 @@ public class Main : IPlugin, IContextMenu {
         };
         _openOutputDirResult = new Result {
             Title = "open output directory 📂",
-            SubTitle = "containing last image generated",
+            SubTitle = "folder contains last image generated for each meme",
             IcoPath = _iconPath,
             Action = _ => {
                 if (!Directory.Exists(_outputDir)) {
@@ -63,6 +63,7 @@ public class Main : IPlugin, IContextMenu {
                 Title = "copy mocked text",
                 SubTitle = mockedQuery,
                 IcoPath = _copyTextIconPath,
+                Score = _memes.Count * 100,
                 Action = _ => {
                     Clipboard.SetText(mockedQuery);
                     _context.API.ShowMsg(

@@ -12,9 +12,10 @@ public class Meme {
     private readonly string _memePath;
     private readonly string _memeOutputPath;
     private readonly string _memeIconPath;
+    private readonly int _score;
 
-    private Meme(string memePath, PluginInitContext context) {
-        _memeName = Path.GetFileNameWithoutExtension(memePath).TrimStart('#').TrimStart('$').Replace('-', ' ');
+    private Meme(string memePath, int score, PluginInitContext context) {
+        _memeName = Path.GetFileNameWithoutExtension(memePath).Replace('-', ' ');
         _memePath = memePath;
         _memeOutputPath = Path.Combine(
             context.CurrentPluginMetadata.PluginDirectory, PluginDir.OutputDir,
@@ -24,6 +25,7 @@ public class Meme {
             context.CurrentPluginMetadata.PluginDirectory, PluginDir.MemesDir,
             Path.GetFileNameWithoutExtension(memePath) + "-icon" + Path.GetExtension(memePath)
         );
+        _score = score;
     }
     
     public Result ToResult(string text, PluginInitContext context) {
@@ -31,6 +33,7 @@ public class Meme {
             Title = $"copy {_memeName} image",
             SubTitle = text,
             IcoPath = _memeIconPath,
+            Score = _score,
             Action = _ => {
                 var image = Generate(text);
                 Clipboard.SetImage(image);
@@ -63,9 +66,18 @@ public class Meme {
         }
     
         var memeFiles = Directory.GetFiles(memesDir, "*.png")
-            .Where(file => !file.EndsWith("-icon.png"));
-        foreach (var memeFile in memeFiles) {
-            memes.Add(new Meme(memeFile, context));
+            .Where(file => !file.EndsWith("-icon.png"))
+            .OrderBy(file => {
+                if (file.Contains("mocking-spongebob")) return 0;
+                if (file.Contains("mocking-patrick")) return 1;
+                if (file.Contains("cat-and-woman")) return 2;
+                return 3;
+            });
+
+        int score = memeFiles.Count() * 8;
+        for (int i = 0; i < memeFiles.Count(); i++) {
+            memes.Add(new Meme(memeFiles.ElementAt(i), score, context));
+            score -= 8;
         }
 
         return memes;

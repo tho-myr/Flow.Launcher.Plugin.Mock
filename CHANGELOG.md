@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - unreleased
+
+- unreleased
+
 ## [1.1.0] - 2025-03-02
 
 - ✨ add more images

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Media.Imaging;
 using SkiaSharp;
@@ -9,7 +9,7 @@ public static class ImageGenerator {
     
     private const string FontFamily = "Arial";
     
-    public static BitmapImage CreateMockedImage(string inputImagePath, string outputImagePath, string text) {
+    public static BitmapImage CreateImage(string inputImagePath, string outputImagePath, string text) {
         using (var input = File.OpenRead(inputImagePath))
         using (var image = SKBitmap.Decode(input))
         using (var canvas = new SKCanvas(image)) {

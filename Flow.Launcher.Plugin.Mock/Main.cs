@@ -46,9 +46,16 @@ public class Main : IPlugin, IContextMenu {
     }
     
     public List<Result> LoadContextMenus(Result selectedResult) {
-        return new List<Result> {
+        var contextMenuResults = new List<Result> {
             _openOutputDirResult
         };
+
+        if (selectedResult is not { ContextData: Meme meme }) return contextMenuResults;
+
+        contextMenuResults.Insert(0, meme.ToResult(null, _context, true));
+        contextMenuResults.Insert(1, meme.ToResult(null, _context, true, false));
+
+        return contextMenuResults;
     }
 
     public List<Result> Query(Query query) {
@@ -75,7 +82,7 @@ public class Main : IPlugin, IContextMenu {
                 }
             });
 
-            results.AddRange(_memes.Select(meme => meme.ToResult(mockedQuery, _context)));
+            results.AddRange(_memes.Select(meme => meme.ToResult(query.Search, _context)));
         }
 
         return results;

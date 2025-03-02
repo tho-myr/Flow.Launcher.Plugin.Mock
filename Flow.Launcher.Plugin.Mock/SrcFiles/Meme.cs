@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -13,6 +13,8 @@ public class Meme {
     private readonly string _memeOutputPath;
     private readonly string _memeIconPath;
     private readonly int _score;
+    
+    private string Query { get; set; }
 
     private Meme(string memePath, int score, PluginInitContext context) {
         _memeName = Path.GetFileNameWithoutExtension(memePath).Replace('-', ' ');
@@ -28,18 +30,21 @@ public class Meme {
         _score = score;
     }
     
-    public Result ToResult(string text, PluginInitContext context) {
+    public Result ToResult(string query, PluginInitContext context, bool contextMenuItem = false, bool mockedText = true) {
+        Query = query ?? Query;
+        var shownText = mockedText ? MockingCaseConverter.Convert(Query) : Query;
         return new Result {
-            Title = $"copy {_memeName} image",
-            SubTitle = text,
+            Title = contextMenuItem ? mockedText ? "copy with mocked query" : "copy with unmodified query" : $"copy {_memeName} image",
+            SubTitle = shownText,
             IcoPath = _memeIconPath,
-            Score = _score,
+            Score = contextMenuItem ? 0 : _score,
+            ContextData = this,
             Action = _ => {
-                var image = Generate(text);
+                var image = Generate(shownText);
                 Clipboard.SetImage(image);
                 context.API.ShowMsg(
                     $"copied {_memeName} to clipboard",
-                    text,
+                    shownText,
                     _memeIconPath
                 );
                 return true;
@@ -48,7 +53,7 @@ public class Meme {
     }
     
     private BitmapImage Generate(string text) {
-        return ImageGenerator.CreateMockedImage(_memePath, _memeOutputPath, MockingCaseConverter.Convert(text));
+        return ImageGenerator.CreateImage(_memePath, _memeOutputPath, text);
     }
     
     public static List<Meme> LoadAllFromMemesFolder(PluginInitContext context) {

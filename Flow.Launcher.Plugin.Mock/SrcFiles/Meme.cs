@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -79,10 +79,11 @@ public class Meme {
                 return 3;
             });
 
-        int score = memeFiles.Count() * 8;
-        for (int i = 0; i < memeFiles.Count(); i++) {
+        const int scoreMultiplier = 50;
+        var score = memeFiles.Count() * scoreMultiplier;
+        for (var i = 0; i < memeFiles.Count(); i++) {
             memes.Add(new Meme(memeFiles.ElementAt(i), score, context));
-            score -= 8;
+            score -= scoreMultiplier;
         }
 
         return memes;

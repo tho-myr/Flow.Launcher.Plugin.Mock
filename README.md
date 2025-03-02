@@ -36,7 +36,7 @@
 > Feel free to leave suggestions or report bugs in the [issues](https://github.com/tho-myr/Flow.Launcher.Plugin.Mock/issues) section. 
 > Or fork the project and create a pull request with your own changes ^-^
 
-A plugin to generate mocking case and memes with [flow launcher](https://github.com/Flow-Launcher/Flow.Launcher) 🥸
+A plugin to generate mocking case and memes with [flow launcher](https://github.com/Flow-Launcher/Flow.Launcher) 👾
 
 ### Installation
 
@@ -57,9 +57,19 @@ mock <query_to_mock>
 
 ![query-example.png](readme-assets/query-example.png)
 
-#### Output example
+#### Context menu options
 
-![output-example.png](readme-assets/output-example.png)
+you can use `MOUSE RIGHT CLICK` or `SHIFT + ENTER` on result item to open context menu :)
+
+![context-menu-example.png](readme-assets/context-menu-example.png)
+
+#### Output example with mocked query (default behaviour)
+
+![output-with-mocked-query.png](readme-assets/output-with-mocked-query.png)
+
+#### Output example with unmodified query (selected through context menu)
+
+![output-with-unmodified-query.png](readme-assets/output-with-unmodified-query.png)
 
 ### Development
 

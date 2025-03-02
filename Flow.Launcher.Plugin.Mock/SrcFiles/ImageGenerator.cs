@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Windows.Media.Imaging;
 using SkiaSharp;
@@ -7,7 +7,7 @@ namespace Flow.Launcher.Plugin.Mock.SrcFiles;
 
 public static class ImageGenerator {
     
-    private const string FontFamily = "Arial";
+    private const string FontFamily = "Segoe UI Emoji";
     
     public static BitmapImage CreateImage(string inputImagePath, string outputImagePath, string text) {
         using (var input = File.OpenRead(inputImagePath))

@@ -111,9 +111,6 @@ dotnet build
 4. Create the tag `v1.x.x` on the merge commit on the `master` branch and the release will be built by github actions
 5. Follow the steps [here](https://github.com/Flow-Launcher/Flow.Launcher.PluginsManifest?tab=readme-ov-file#how-to-submit-your-plugin) to submit plugin 
 
-### Inspiration
+### Final word
 
-Love to the developers of the [Shortcuts Plugin](https://github.com/mantasjasikenas/flow-launcher-shortcuts-plugin). 
-I took a lot of inspiration from their plugin and would like to thank them here <3
-
-Thanks for using my plugin or reading through this long-ass readme. love yall (づ ◕‿◕ )づ
+thanks for using my plugin and reading through this long-ass readme. love yall (づ ◕‿◕ )づ

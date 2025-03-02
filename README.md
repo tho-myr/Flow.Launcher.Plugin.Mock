@@ -12,6 +12,9 @@
         <a href="https://github.com/tho-myr/Flow.Launcher.Plugin.Mock/commits">
             <img src="https://img.shields.io/github/last-commit/tho-myr/Flow.Launcher.Plugin.Mock" alt="GitHub last commit">
         </a>
+        <a href="https://github.com/tho-myr/Flow.Launcher.Plugin.Mock/releases">
+            <img src="https://img.shields.io/github/downloads/tho-myr/Flow.Launcher.Plugin.Mock/total" alt="Total Downloads">
+        </a>
     </div>
 </div>
 

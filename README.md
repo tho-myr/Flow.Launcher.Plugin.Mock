@@ -21,9 +21,11 @@
   <img src="Flow.Launcher.Plugin.Mock/Images/icon.png" alt="Shortcuts logo" width="150">  
   
   <h1>
-    Mock 🥸
+    Mock 👾
 	<br>
-	Generate mocking case and memes (⬭ω⬭)
+	generate mocking case and memes
+    <br>
+    (⬭ω⬭)
   </h1>
 </div>
 

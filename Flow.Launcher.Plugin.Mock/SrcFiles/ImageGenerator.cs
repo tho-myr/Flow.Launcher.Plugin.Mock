@@ -3,21 +3,22 @@ using System.IO;
 using System.Windows.Media.Imaging;
 using SkiaSharp;
 
-namespace Flow.Launcher.Plugin.Mock;
+namespace Flow.Launcher.Plugin.Mock.SrcFiles;
 
-public class ImageGenerator {
+public static class ImageGenerator {
     
-    private const int FontSize = 80;
-    private const int OutlineWidth = 6;
-    private const string FontFamily = "Arial";
-    private const int TextMarginBottom = 40;
+    private const string FontFamily = "Segoe UI Emoji";
     
-    public static BitmapImage CreateMockedImage(string inputImagePath, string outputImagePath, string text) {
+    public static BitmapImage CreateImage(string inputImagePath, string outputImagePath, string text) {
         using (var input = File.OpenRead(inputImagePath))
         using (var image = SKBitmap.Decode(input))
         using (var canvas = new SKCanvas(image)) {
+            int fontSize = image.Height / 13; // Set font size to 7.69% of the image height (hehe 69 :3)
+            int textMarginBottom = image.Height / 25; // Set text margin bottom to 4% of the image height
+            int strokeWidth = fontSize / 5; // Set stroke width to 10% of the font size
+            
             var font = new SKFont {
-                Size = FontSize,
+                Size = fontSize,
                 Typeface = SKTypeface.FromFamilyName(FontFamily, SKFontStyle.Bold)
             };
 
@@ -30,13 +31,13 @@ public class ImageGenerator {
                 Color = SKColors.Black,
                 IsAntialias = true,
                 Style = SKPaintStyle.Stroke,
-                StrokeWidth = OutlineWidth
+                StrokeWidth = strokeWidth
             };
 
             var lines = SplitImageTextIntoLines(text, font, image);
 
             // Draw each line of text
-            var yOffset = image.Height - TextMarginBottom - (lines.Count - 1) * font.Size;
+            var yOffset = image.Height - textMarginBottom - (lines.Count - 1) * font.Size;
             foreach (var line in lines) {
                 var point = new SKPoint(image.Width / 2, yOffset);
                 canvas.DrawText(line, point, SKTextAlign.Center, font, paintOutline);

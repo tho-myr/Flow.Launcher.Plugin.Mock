@@ -36,7 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Flow.Launcher.Plugin" Version="4.1.0" />
+    <PackageReference Include="Flow.Launcher.Plugin" Version="4.4.0" />
     <PackageReference Include="SkiaSharp" Version="3.116.1" />
   </ItemGroup>
 

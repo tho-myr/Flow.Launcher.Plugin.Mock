@@ -1,0 +1,60 @@
+﻿<UserControl x:Class="Flow.Launcher.Plugin.Mock.Settings.PluginSettings"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Flow.Launcher.Plugin.Mock.Settings"
+             d:DataContext="{d:DesignInstance vm:SettingsViewModel}"
+             d:DesignHeight="300"
+             d:DesignWidth="500"
+             mc:Ignorable="d">
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ListView
+            x:Name="CustomMemeFoldersListView"
+            Grid.Row="0"
+            Margin="10"
+            BorderBrush="DarkGray"
+            BorderThickness="1"
+            ItemsSource="{Binding Settings.CustomMemeFolders}"
+            SelectedItem="{Binding Settings.SelectedCustomMemeFolder}"
+            Style="{StaticResource {x:Static GridView.GridViewStyleKey}}">
+            
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="50">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Image
+                                    Width="20"
+                                    Height="20"
+                                    Margin="6 0 0 0"
+                                    Source="{Binding Path=IconPath}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn
+                        Width="130"
+                        DisplayMemberBinding="{Binding Keyword}"
+                        Header="Keyword" />
+                    <GridViewColumn
+                        Width="239"
+                        DisplayMemberBinding="{Binding FolderPath}"
+                        Header="Path" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+            <Button Width="100" Margin="5" Click="OnDeleteCustomMemeFolderClick" Content="Delete" />
+            <Button Width="100" Margin="5" Click="OnEditCustomMemeFolderClick" Content="Edit" />
+            <Button Width="100" Margin="5" Click="OnAddCustomMemeFolderClick" Content="Add" />
+        </StackPanel>
+    </Grid>
+</UserControl>

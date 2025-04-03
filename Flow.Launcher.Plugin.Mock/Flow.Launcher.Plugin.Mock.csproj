@@ -8,6 +8,7 @@
     <PackageProjectUrl>https://github.com/tho-myr/Flow.Launcher.Plugin.Mock</PackageProjectUrl>
     <RepositoryUrl>https://github.com/tho-myr/Flow.Launcher.Plugin.Mock</RepositoryUrl>
     <PackageTags>flow-launcher flow-plugin</PackageTags>
+    <UseWpf>true</UseWpf>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

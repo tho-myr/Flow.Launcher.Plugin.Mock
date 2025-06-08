@@ -62,7 +62,7 @@ public class Meme {
         
         var memes = new List<Meme>();
         if (!Directory.Exists(memesDir)) {
-            Directory.CreateDirectory(memesDir);
+            Directory.CreateDirectory(memesDir!);
             context.API.ShowMsg(
                 "mock plugin meme folder not found 😖 initialization for image generation failed",
                 "image generation will not be available",

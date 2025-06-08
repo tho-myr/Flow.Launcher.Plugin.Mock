@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
-using Microsoft.Win32;
+using System.Windows.Controls;
 
 namespace Flow.Launcher.Plugin.Mock.Settings;
 
@@ -8,34 +8,31 @@ public partial class CustomMemeFolderSettingWindow {
     
     private readonly Settings.CustomMemeFolder _oldCustomMemeFolder;
     private Settings.CustomMemeFolder _customMemeFolder;
-    private IList<Settings.CustomMemeFolder> _customMemeFolders;
     private Action _action;
     private PluginInitContext _context;
+    private Settings _settings;
+    private GridView _gridView;
     private readonly CustomMemeFolderViewModel _customMemeFolderViewModel;
-    private string selectedNewIconImageFullPath;
 
-    public CustomMemeFolderSettingWindow(IList<Settings.CustomMemeFolder> folders, PluginInitContext context, Settings.CustomMemeFolder old) {
+    public CustomMemeFolderSettingWindow(Settings settings, PluginInitContext context, Settings.CustomMemeFolder old, GridView gridView) {
         _oldCustomMemeFolder = old;
         _customMemeFolderViewModel = new CustomMemeFolderViewModel { CustomMemeFolder = old.DeepCopy() };
-        Initialize(folders, context, Action.Edit);
+        Initialize(settings, context, Action.Edit, gridView);
     }
 
-    public CustomMemeFolderSettingWindow(IList<Settings.CustomMemeFolder> folders, PluginInitContext context) {
+    public CustomMemeFolderSettingWindow(Settings settings, PluginInitContext context, GridView gridView) {
         _customMemeFolderViewModel = new CustomMemeFolderViewModel { CustomMemeFolder = new Settings.CustomMemeFolder() };
-        Initialize(folders, context, Action.Add);
+        Initialize(settings, context, Action.Add, gridView);
     }
 
-    private async void Initialize(IList<Settings.CustomMemeFolder> folders, PluginInitContext context, Action action) {
+    private void Initialize(Settings settings, PluginInitContext context, Action action, GridView gridView) {
         InitializeComponent();
         DataContext = _customMemeFolderViewModel;
         _customMemeFolder = _customMemeFolderViewModel.CustomMemeFolder;
-        _customMemeFolders = folders;
-        _action = action;
+        _settings = settings;
         _context = context;
-
-        _customMemeFolderViewModel.SetupCustomIconsDirectory();
-
-        ImgPreviewIcon.Source = await _customMemeFolderViewModel.LoadPreviewIconAsync(_customMemeFolder.Icon);
+        _action = action;
+        _gridView = gridView;
     }
 
     private void OnCancelButtonClick(object sender, RoutedEventArgs e) {
@@ -44,11 +41,9 @@ public partial class CustomMemeFolderSettingWindow {
 
     private void OnConfirmButtonClick(object sender, RoutedEventArgs e) {
         if (string.IsNullOrEmpty(_customMemeFolder.Keyword)) {
-            MessageBox.Show("please enter a keyword");
+            _context.API.ShowMsgBox("please enter a keyword");
         } else if (string.IsNullOrEmpty(_customMemeFolder.FolderPath)) {
-            MessageBox.Show("please enter a folder path");
-        } else if (string.IsNullOrEmpty(selectedNewIconImageFullPath)) {
-            MessageBox.Show("please select a icon");
+            _context.API.ShowMsgBox("please enter a folder path");
         } else if (_action == Action.Add) {
             AddCustomMemeFolder();
         } else if (_action == Action.Edit) {
@@ -57,50 +52,41 @@ public partial class CustomMemeFolderSettingWindow {
     }
 
     private void AddCustomMemeFolder() {
-        // TODO: Check if the keyword already exists
-        var success = _customMemeFolderViewModel.CopyNewImageToUserDataDirectoryIfRequired(
-            _context, 
-            _customMemeFolder, 
-            selectedNewIconImageFullPath,
-            string.Empty
-        );
-        if (!success) {
-            MessageBox.Show("failed to copy the selected image file to custom icons folder.");
+        if (_settings.CustomMemeFolderKeywordExists(_customMemeFolder.Keyword)) {
+            _context.API.ShowMsgBox("A custom meme folder with this keyword already exists :( Please choose a different keyword.");
             return;
         }
-        _customMemeFolderViewModel.UpdateIconAttributes(_customMemeFolder, selectedNewIconImageFullPath);
-        _customMemeFolders.Add(_customMemeFolder);
+        _settings.CustomMemeFolders.Add(_customMemeFolder);
+        _context.API.SaveSettingJsonStorage<Settings>();
         Close();
+        RefreshColumnWidths(_gridView);
     }
 
     private void EditCustomMemeFolder() {
-        // TODO: keyword handling
-        var index = _customMemeFolders.IndexOf(_oldCustomMemeFolder);
-        _customMemeFolders[index] = _customMemeFolder;
-
-        if (!string.IsNullOrEmpty(selectedNewIconImageFullPath)) {
-            _customMemeFolderViewModel.UpdateIconAttributes(_customMemeFolder, selectedNewIconImageFullPath);
-            _customMemeFolderViewModel.CopyNewImageToUserDataDirectoryIfRequired(
-                _context, 
-                _customMemeFolder, 
-                selectedNewIconImageFullPath,
-                _oldCustomMemeFolder.Icon
-            );
+        if (_settings.CustomMemeFolderKeywordExists(_customMemeFolder.Keyword) &&
+            _customMemeFolder.Keyword != _oldCustomMemeFolder.Keyword)
+        {
+            _context.API.ShowMsgBox("A custom meme folder with this keyword already exists :( Please choose a different keyword.");
+            return;
         }
-
+        var index = _settings.CustomMemeFolders.IndexOf(_oldCustomMemeFolder);
+        _settings.CustomMemeFolders[index] = _customMemeFolder;
+        _context.API.SaveSettingJsonStorage<Settings>();
         Close();
+        RefreshColumnWidths(_gridView);
     }
-
-    private async void OnSelectIconClick(object sender, RoutedEventArgs e) {
-        const string filter = "image files (*.jpg, *.jpeg, *.gif, *.png, *.bmp) |*.jpg; *.jpeg; *.gif; *.png; *.bmp";
-        var dialog = new OpenFileDialog { InitialDirectory = Main.CustomIconsDirectory, Filter = filter };
-        
-        var result = dialog.ShowDialog();
-        if (result != true) return;
-        selectedNewIconImageFullPath = dialog.FileName;
-        
-        if (!string.IsNullOrEmpty(selectedNewIconImageFullPath)) {
-            ImgPreviewIcon.Source = await _customMemeFolderViewModel.LoadPreviewIconAsync(selectedNewIconImageFullPath);
+    
+    private static void RefreshColumnWidths(GridView gridView)
+    {
+        if (gridView == null) return;
+        foreach (var column in gridView.Columns)
+        {
+            // Force the column to refresh its width
+            if (double.IsNaN(column.Width))
+            {
+                column.Width = column.ActualWidth;
+            }
+            column.Width = double.NaN; // Set back to Auto
         }
     }
 }

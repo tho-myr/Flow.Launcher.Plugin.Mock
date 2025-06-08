@@ -1,12 +1,16 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace Flow.Launcher.Plugin.Mock.Settings;
 
 public class Settings : BaseModel {
     
+    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
+    // set; is needed for correct JSON serialization/deserialization
     public ObservableCollection<CustomMemeFolder> CustomMemeFolders { get; set; } = new();
     [JsonIgnore]
     public CustomMemeFolder SelectedCustomMemeFolder { get; set; }
@@ -19,6 +23,9 @@ public class Settings : BaseModel {
         }
     }
     
+    public bool CustomMemeFolderKeywordExists(string keyword) {
+        return CustomMemeFolders.Any(folder => folder.Keyword.Equals(keyword, StringComparison.OrdinalIgnoreCase));
+    }
     
     public class CustomMemeFolder : BaseModel {
         
@@ -26,11 +33,6 @@ public class Settings : BaseModel {
         public string Keyword { get; set; }
         [Required]
         public string FolderPath { get; set; }
-        [Required]
-        public string Icon { get; set; }
-        
-        [JsonIgnore]
-        public string IconPath => System.IO.Path.Combine(Main.CustomIconsDirectory, Icon);
 
         public CustomMemeFolder DeepCopy()
         {
@@ -38,7 +40,6 @@ public class Settings : BaseModel {
             {
                 Keyword = Keyword,
                 FolderPath = FolderPath,
-                Icon = Icon
             };
             return copy;
         }

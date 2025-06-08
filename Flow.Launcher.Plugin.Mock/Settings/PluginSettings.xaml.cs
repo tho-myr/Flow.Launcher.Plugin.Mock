@@ -18,30 +18,29 @@
     
         private void OnAddCustomMemeFolderClick(object sender, RoutedEventArgs e)
         {
-            var setting = new CustomMemeFolderSettingWindow(_settings.CustomMemeFolders, _context);
+            var gridView = CustomMemeFoldersListView.View as GridView;
+            var setting = new CustomMemeFolderSettingWindow(_settings, _context, gridView);
             setting.ShowDialog();
         }
     
-        private void OnDeleteCustomMemeFolderClick(object sender, RoutedEventArgs e)
-        {
-            if (_settings.SelectedCustomMemeFolder != null)
-            {
-                var selected = _settings.SelectedCustomMemeFolder;
-                var warning = "Are you sure you want to delete this custom meme folder?";
-                var result = MessageBox.Show(warning, string.Empty, MessageBoxButton.YesNo);
-                if (result == MessageBoxResult.Yes)
-                {
-                    // TODO: remove keyword from the list of keywords
-                    _settings.CustomMemeFolders.Remove(selected);
-                }
-            }
+        private void OnDeleteCustomMemeFolderClick(object sender, RoutedEventArgs e) {
+            if (_settings.SelectedCustomMemeFolder == null) return;
+            
+            var selected = _settings.SelectedCustomMemeFolder;
+            const string warning = "Are you sure you want to delete this custom meme folder?";
+            var result = _context.API.ShowMsgBox(warning, "delete entry :(", MessageBoxButton.YesNo);
+                
+            if (result != MessageBoxResult.Yes) return;
+            _settings.CustomMemeFolders.Remove(selected);
+            _context.API.SaveSettingJsonStorage<Settings>();
         }
     
         private void OnEditCustomMemeFolderClick(object sender, RoutedEventArgs e)
         {
             if (_settings.SelectedCustomMemeFolder != null)
             {
-                var setting = new CustomMemeFolderSettingWindow(_settings.CustomMemeFolders, _context, _settings.SelectedCustomMemeFolder);
+                var gridView = CustomMemeFoldersListView.View as GridView;
+                var setting = new CustomMemeFolderSettingWindow(_settings, _context, _settings.SelectedCustomMemeFolder, gridView);
                 setting.ShowDialog();
             }
         }

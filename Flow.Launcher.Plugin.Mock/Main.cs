@@ -23,8 +23,6 @@ public class Main : IPlugin, IContextMenu, ISettingProvider {
     private Result _emptyQueryResult;
     private Result _openOutputDirResult;
     
-    internal static string CustomIconsDirectory = "CustomIcons";
-
     public void Init(PluginInitContext context) {
         _context = context;
         _settings = context.API.LoadSettingJsonStorage<Settings.Settings>();
@@ -32,7 +30,6 @@ public class Main : IPlugin, IContextMenu, ISettingProvider {
         _iconPath = PluginFile.FullPath(PluginFile.IconPath, context);
         _copyTextIconPath = PluginFile.FullPath(PluginFile.CopyTextIconPath, context);
         _outputDir = PluginDir.FullPath(PluginDir.OutputDir, context);
-        CustomIconsDirectory = Path.Combine(context.CurrentPluginMetadata.PluginDirectory, CustomIconsDirectory);
         
         _emptyQueryResult = new Result {
             Title = "please enter a query to mock",

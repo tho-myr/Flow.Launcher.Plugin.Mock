@@ -1,12 +1,13 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Flow.Launcher.Plugin.Mock.Settings.Models;
 
-namespace Flow.Launcher.Plugin.Mock.Settings;
+namespace Flow.Launcher.Plugin.Mock.Settings.Interface;
 
-public partial class PluginSettings : UserControl {
+public partial class PluginSettings {
     private readonly PluginInitContext _context;
-    private readonly Settings _settings;
+    private readonly Models.Settings _settings;
 
     public PluginSettings(PluginInitContext context, SettingsViewModel viewModel) {
         InitializeComponent();
@@ -30,7 +31,7 @@ public partial class PluginSettings : UserControl {
 
         if (result != MessageBoxResult.Yes) return;
         _settings.CustomMemeFolders.Remove(selected);
-        _context.API.SaveSettingJsonStorage<Settings>();
+        _context.API.SaveSettingJsonStorage<Models.Settings>();
     }
 
     private void OnEditCustomMemeFolderClick(object sender, RoutedEventArgs e) {

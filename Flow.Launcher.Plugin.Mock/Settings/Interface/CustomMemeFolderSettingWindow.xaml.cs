@@ -1,32 +1,32 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using Flow.Launcher.Plugin.Mock.Settings.Models;
 
-namespace Flow.Launcher.Plugin.Mock.Settings;
+namespace Flow.Launcher.Plugin.Mock.Settings.Interface;
 
 public partial class CustomMemeFolderSettingWindow {
     
-    private Settings _settings;
+    private Models.Settings _settings;
     private PluginInitContext _context;
     private Action _action;
     private GridView _gridView;
-    private Settings.CustomMemeFolder _customMemeFolder;
-    private readonly Settings.CustomMemeFolder _oldCustomMemeFolder;
+    private CustomMemeFolder _customMemeFolder;
+    private readonly CustomMemeFolder _oldCustomMemeFolder;
     private readonly CustomMemeFolderViewModel _customMemeFolderViewModel;
 
-    public CustomMemeFolderSettingWindow(Settings settings, PluginInitContext context, Settings.CustomMemeFolder old, GridView gridView) {
+    public CustomMemeFolderSettingWindow(Models.Settings settings, PluginInitContext context, CustomMemeFolder old, GridView gridView) {
         _oldCustomMemeFolder = old;
         _customMemeFolderViewModel = new CustomMemeFolderViewModel { CustomMemeFolder = old.DeepCopy() };
         Initialize(settings, context, Action.Edit, gridView);
     }
 
-    public CustomMemeFolderSettingWindow(Settings settings, PluginInitContext context, GridView gridView) {
-        _customMemeFolderViewModel = new CustomMemeFolderViewModel { CustomMemeFolder = new Settings.CustomMemeFolder() };
+    public CustomMemeFolderSettingWindow(Models.Settings settings, PluginInitContext context, GridView gridView) {
+        _customMemeFolderViewModel = new CustomMemeFolderViewModel { CustomMemeFolder = new CustomMemeFolder() };
         Initialize(settings, context, Action.Add, gridView);
     }
 
-    private void Initialize(Settings settings, PluginInitContext context, Action action, GridView gridView) {
+    private void Initialize(Models.Settings settings, PluginInitContext context, Action action, GridView gridView) {
         InitializeComponent();
         DataContext = _customMemeFolderViewModel;
         _customMemeFolder = _customMemeFolderViewModel.CustomMemeFolder;
@@ -62,7 +62,7 @@ public partial class CustomMemeFolderSettingWindow {
             return;
         }
         _settings.CustomMemeFolders.Add(_customMemeFolder);
-        _context.API.SaveSettingJsonStorage<Settings>();
+        _context.API.SaveSettingJsonStorage<Models.Settings>();
         Close();
         RefreshColumnWidths(_gridView);
     }
@@ -71,7 +71,7 @@ public partial class CustomMemeFolderSettingWindow {
         if (IsCurrentCustomMemeFolderInvalid()) return;
         var index = _settings.CustomMemeFolders.IndexOf(_oldCustomMemeFolder);
         _settings.CustomMemeFolders[index] = _customMemeFolder;
-        _context.API.SaveSettingJsonStorage<Settings>();
+        _context.API.SaveSettingJsonStorage<Models.Settings>();
         Close();
         RefreshColumnWidths(_gridView);
     }

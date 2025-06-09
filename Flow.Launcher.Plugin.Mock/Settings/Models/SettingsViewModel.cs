@@ -1,4 +1,4 @@
-﻿namespace Flow.Launcher.Plugin.Mock.Settings;
+﻿namespace Flow.Launcher.Plugin.Mock.Settings.Models;
 
 public class SettingsViewModel {
     

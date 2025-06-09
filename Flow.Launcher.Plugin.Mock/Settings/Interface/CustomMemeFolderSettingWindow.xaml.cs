@@ -7,6 +7,15 @@ namespace Flow.Launcher.Plugin.Mock.Settings.Interface;
 
 public partial class CustomMemeFolderSettingWindow {
     
+    private const string KeywordInvalidTitle = "invalid keyword :(";
+    private const string KeywordEmptyMessage = "keyword is emtpy. please enter a keyword :3";
+    private const string KeywordCannotContainSpacesMessage = "keyword cannot contain spaces. please enter a valid keyword :3";
+    private const string KeywordAlreadyExistsMessage = "a custom meme folder with this keyword already exists. please choose another one :3";
+    
+    private const string FolderPathInvalidTitle = "invalid folder path :(";
+    private const string FolderPathEmptyMessage = "folder path is empty. please enter a folder path :3";
+    private const string FolderPathNotExistingMessage = "path could not be resolved or doesn't exist. please enter a valid path or check if the given path exists :3";
+
     private Models.Settings _settings;
     private PluginInitContext _context;
     private Action _action;
@@ -53,14 +62,7 @@ public partial class CustomMemeFolderSettingWindow {
     }
 
     private void AddCustomMemeFolder() {
-        if (_settings.CustomMemeFolderKeywordExists(_customMemeFolder.Keyword)) {
-            _context.API.ShowMsgBox("A custom meme folder with this keyword already exists :( Please choose a different keyword.");
-            return;
-        }
-        if (!Directory.Exists(_customMemeFolder.FolderPath)) {
-            _context.API.ShowMsgBox("Path could not be resolved or doesn't exist", "Invalid Path :(");
-            return;
-        }
+        if (IsCurrentCustomMemeFolderInvalid()) return;
         _settings.CustomMemeFolders.Add(_customMemeFolder);
         _context.API.SaveSettingJsonStorage<Models.Settings>();
         Close();
@@ -77,14 +79,25 @@ public partial class CustomMemeFolderSettingWindow {
     }
 
     private bool IsCurrentCustomMemeFolderInvalid() {
-        if (_settings.CustomMemeFolderKeywordExists(_customMemeFolder.Keyword) && 
-            (_oldCustomMemeFolder == null || _customMemeFolder.Keyword != _oldCustomMemeFolder.Keyword)) {
-            _context.API.ShowMsgBox("A custom meme folder with this keyword already exists. Please choose another one :3", "Invalid Keyword :(");
+        if (string.IsNullOrEmpty(_customMemeFolder.Keyword)) {
+            _context.API.ShowMsgBox(KeywordEmptyMessage, KeywordInvalidTitle);
             return true;
         }
-
+        if (_customMemeFolder.Keyword.Contains(' ')) {
+            _context.API.ShowMsgBox(KeywordCannotContainSpacesMessage, KeywordInvalidTitle);
+            return true;
+        }
+        if (_settings.CustomMemeFolderKeywordExists(_customMemeFolder.Keyword) && 
+            (_oldCustomMemeFolder == null || _customMemeFolder.Keyword != _oldCustomMemeFolder.Keyword)) {
+            _context.API.ShowMsgBox(KeywordAlreadyExistsMessage, KeywordInvalidTitle);
+            return true;
+        }
+        if (string.IsNullOrEmpty(_customMemeFolder.FolderPath)) {
+            _context.API.ShowMsgBox(FolderPathEmptyMessage, FolderPathInvalidTitle);
+            return true;
+        }
         if (!Directory.Exists(_customMemeFolder.FolderPath)) {
-            _context.API.ShowMsgBox("Path could not be resolved or doesn't exist. Please enter a valid path or check if the given Path exists :3", "Invalid Path :(");
+            _context.API.ShowMsgBox(FolderPathNotExistingMessage, FolderPathInvalidTitle);
             return true;
         }
 

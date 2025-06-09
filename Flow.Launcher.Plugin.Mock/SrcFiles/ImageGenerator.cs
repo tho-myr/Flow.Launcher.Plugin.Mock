@@ -9,7 +9,7 @@ public static class ImageGenerator {
     
     private const string FontFamily = "Segoe UI Emoji";
     
-    public static BitmapImage CreateImage(string inputImagePath, string outputImagePath, string text) {
+    public static BitmapImage CreateImage(string inputImagePath, string text) {
         using var input = File.OpenRead(inputImagePath);
         using var image = SKBitmap.Decode(input);
         using var canvas = new SKCanvas(image);
@@ -54,7 +54,6 @@ public static class ImageGenerator {
         bitmapImage.StreamSource = output;
         bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
         bitmapImage.EndInit();
-        SaveImageToOutputDir(bitmapImage, outputImagePath);
         return bitmapImage;
     }
 
@@ -80,17 +79,5 @@ public static class ImageGenerator {
         }
 
         return lines;
-    }
-
-    private static void SaveImageToOutputDir(BitmapImage image, string outputPath) {
-        var outputDir = Path.GetDirectoryName(outputPath);
-        if (!Directory.Exists(outputDir)) {
-            Directory.CreateDirectory(outputDir!);
-        }
-
-        using var fileStream = new FileStream(outputPath, FileMode.Create);
-        var encoder = new PngBitmapEncoder();
-        encoder.Frames.Add(BitmapFrame.Create(image));
-        encoder.Save(fileStream);
     }
 }

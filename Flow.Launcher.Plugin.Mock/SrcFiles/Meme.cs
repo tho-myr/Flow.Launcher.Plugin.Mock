@@ -1,91 +1,72 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Media.Imaging;
+using Flow.Launcher.Plugin.Mock.Settings.Models;
 
 namespace Flow.Launcher.Plugin.Mock.SrcFiles;
 
 public class Meme {
     
+    private static readonly string[] ImageExtensions = { "*.jpg", "*.jpeg", "*.png" };
+
+    private readonly PluginInitContext _context;
     private readonly string _memeName;
     private readonly string _memePath;
-    private readonly string _memeOutputPath;
-    private readonly string _memeIconPath;
-    private readonly int _score;
-    
-    private string Query { get; set; }
 
-    private Meme(string memePath, int score, PluginInitContext context) {
-        _memeName = Path.GetFileNameWithoutExtension(memePath).Replace('-', ' ');
+    private Meme(string memePath, PluginInitContext context) {
+        _memeName = Path.GetFileNameWithoutExtension(memePath).Replace(' ', '_');
         _memePath = memePath;
-        _memeOutputPath = Path.Combine(
-            context.CurrentPluginMetadata.PluginDirectory, PluginDir.OutputDir,
-            Path.GetFileNameWithoutExtension(memePath) + "-output" + Path.GetExtension(memePath)
-        );
-        _memeIconPath = Path.Combine(
-            context.CurrentPluginMetadata.PluginDirectory, PluginDir.MemesDir,
-            Path.GetFileNameWithoutExtension(memePath) + "-icon" + Path.GetExtension(memePath)
-        );
-        _score = score;
+        _context = context;
     }
     
-    public Result ToResult(string query, PluginInitContext context, bool contextMenuItem = false, bool mockedText = true) {
-        Query = query ?? Query;
-        var shownText = mockedText ? MockingCaseConverter.Convert(Query) : Query;
+    public Result ToResult(Query query, string imageText, bool mockedText = true) {
+        var possibleMockedImageText = mockedText ? MockingCaseConverter.Convert(imageText) : imageText;
+        var subTitle = "";
+        if (query.SecondSearch.Equals(_memeName)) {
+            if (string.IsNullOrEmpty(imageText)) {
+                subTitle = "type text to put on image or select result to copy image only ^-^";
+            }
+            else {
+                subTitle = mockedText ? $"mocked: '{possibleMockedImageText}'" : $"normal: '{imageText}'";
+            }
+        } else {
+            subTitle = "select result to use image for meme generation :3";
+        }
+        
         return new Result {
-            Title = contextMenuItem ? mockedText ? "copy with mocked query" : "copy with unmodified query" : $"copy {_memeName} image",
-            SubTitle = shownText,
-            IcoPath = _memeIconPath,
-            Score = contextMenuItem ? 0 : _score,
+            Title = _memeName,
+            SubTitle = subTitle,
+            IcoPath = _memePath,
             ContextData = this,
+            AutoCompleteText = query.ActionKeyword + " " + query.FirstSearch + " " + _memeName + " ",
             Action = _ => {
-                var image = Generate(shownText);
+                if (!query.SecondSearch.Equals(_memeName)) {
+                    _context.API.ChangeQuery(query.ActionKeyword + " " + query.FirstSearch + " " + _memeName + " ");
+                    return false;
+                }
+                var image = ImageGenerator.CreateImage(_memePath, possibleMockedImageText);
                 Clipboard.SetImage(image);
-                context.API.ShowMsg(
+                _context.API.ShowMsg(
                     $"copied {_memeName} to clipboard",
-                    shownText,
-                    _memeIconPath
+                    possibleMockedImageText,
+                    _memePath
                 );
                 return true;
             }
         };
     }
     
-    private BitmapImage Generate(string text) {
-        return ImageGenerator.CreateImage(_memePath, _memeOutputPath, text);
-    }
-    
-    public static List<Meme> LoadAllFromMemesFolder(PluginInitContext context) {
-        var memesDir = PluginDir.FullPath(PluginDir.MemesDir, context);
-        var iconPath = PluginFile.FullPath(PluginFile.IconPath, context);
-        
+    public static List<Meme> LoadAllFromMemesFolder(PluginInitContext context, MemeFolder parentMemeFolder) {
+        if (!Directory.Exists(parentMemeFolder.FolderPath)) {
+            return new List<Meme>();
+        }
         var memes = new List<Meme>();
-        if (!Directory.Exists(memesDir)) {
-            Directory.CreateDirectory(memesDir!);
-            context.API.ShowMsg(
-                "mock plugin meme folder not found 😖 initialization for image generation failed",
-                "image generation will not be available",
-                iconPath
-            );
-        }
-    
-        var memeFiles = Directory.GetFiles(memesDir, "*.png")
-            .Where(file => !file.EndsWith("-icon.png"))
-            .OrderBy(file => {
-                if (file.Contains("mocking-spongebob")) return 0;
-                if (file.Contains("mocking-patrick")) return 1;
-                if (file.Contains("cat-and-woman")) return 2;
-                return 3;
-            });
-
-        const int scoreMultiplier = 50;
-        var score = memeFiles.Count() * scoreMultiplier;
-        for (var i = 0; i < memeFiles.Count(); i++) {
-            memes.Add(new Meme(memeFiles.ElementAt(i), score, context));
-            score -= scoreMultiplier;
-        }
-
+        var memeFiles = ImageExtensions
+            .SelectMany(ext => Directory.GetFiles(parentMemeFolder.FolderPath, ext, SearchOption.TopDirectoryOnly))
+            .Where(file => !Regex.IsMatch(Path.GetFileName(file), @"_icon\..*$"));
+        memes.AddRange(memeFiles.Select(memeFile => new Meme(memeFile, context)));
         return memes;
     }
 }

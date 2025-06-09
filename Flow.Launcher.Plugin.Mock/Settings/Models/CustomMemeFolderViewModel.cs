@@ -3,6 +3,6 @@
 public class CustomMemeFolderViewModel : BaseModel {
     
     // ReSharper disable once PropertyCanBeMadeInitOnly.Global
-    public CustomMemeFolder CustomMemeFolder { get; set; }
+    public MemeFolder CustomMemeFolder { get; set; }
 
 }

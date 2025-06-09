@@ -20,18 +20,18 @@ public partial class CustomMemeFolderSettingWindow {
     private PluginInitContext _context;
     private Action _action;
     private GridView _gridView;
-    private CustomMemeFolder _customMemeFolder;
-    private readonly CustomMemeFolder _oldCustomMemeFolder;
+    private MemeFolder _customMemeFolder;
+    private readonly MemeFolder _oldCustomMemeFolder;
     private readonly CustomMemeFolderViewModel _customMemeFolderViewModel;
 
-    public CustomMemeFolderSettingWindow(Models.Settings settings, PluginInitContext context, CustomMemeFolder old, GridView gridView) {
+    public CustomMemeFolderSettingWindow(Models.Settings settings, PluginInitContext context, MemeFolder old, GridView gridView) {
         _oldCustomMemeFolder = old;
         _customMemeFolderViewModel = new CustomMemeFolderViewModel { CustomMemeFolder = old.DeepCopy() };
         Initialize(settings, context, Action.Edit, gridView);
     }
 
     public CustomMemeFolderSettingWindow(Models.Settings settings, PluginInitContext context, GridView gridView) {
-        _customMemeFolderViewModel = new CustomMemeFolderViewModel { CustomMemeFolder = new CustomMemeFolder() };
+        _customMemeFolderViewModel = new CustomMemeFolderViewModel { CustomMemeFolder = new MemeFolder() };
         Initialize(settings, context, Action.Add, gridView);
     }
 

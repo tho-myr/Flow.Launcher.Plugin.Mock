@@ -49,6 +49,9 @@
                         <GridViewColumn
                             DisplayMemberBinding="{Binding FolderPath}"
                             Header="Path" />
+                        <GridViewColumn
+                            DisplayMemberBinding="{Binding Description}"
+                            Header="Description" />
                     </GridView>
                 </ListView.View>
             </ListView>

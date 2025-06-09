@@ -38,6 +38,7 @@
                 ItemsSource="{Binding Settings.CustomMemeFolders}"
                 SelectedItem="{Binding Settings.SelectedCustomMemeFolder}"
                 MouseDoubleClick="OnEditCustomMemeFolderClick"
+                KeyDown="OnEditCustomMemeFolderKeyDown"
                 Style="{StaticResource {x:Static GridView.GridViewStyleKey}}">
 
                 <ListView.View>

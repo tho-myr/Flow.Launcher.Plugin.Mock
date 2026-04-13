@@ -50,7 +50,7 @@ jobs:
           7z a -tzip "Flow.Launcher.Plugin.Mock.zip" "./bin/Release/win-x64/publish/*"
 
       - name: Publish
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           body: '${{ steps.extract-release-notes.outputs.release_notes }}'
           files: "Flow.Launcher.Plugin.Mock/Flow.Launcher.Plugin.Mock.zip"

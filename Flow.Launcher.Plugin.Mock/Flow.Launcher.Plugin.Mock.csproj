@@ -38,7 +38,7 @@
 
   <ItemGroup>
     <PackageReference Include="Flow.Launcher.Plugin" Version="4.7.0" />
-    <PackageReference Include="SkiaSharp" Version="4.148.0" />
+    <PackageReference Include="SkiaSharp" Version="4.150.0" />
   </ItemGroup>
 
   <ItemGroup>
